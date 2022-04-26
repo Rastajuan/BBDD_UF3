@@ -48,7 +48,7 @@ DELIMITER ;
 SELECT f_valorHipotenusa(2,4);
 
 
-No me había gustado la forma anterior y, después de mucho buscar, encontré la función POW que si funciona en mysql
+No me había gustado la forma anterior y, después de mucho buscar, encontré la función POW() que si funciona en mysql
 
 DELIMITER //
 DROP FUNCTION IF EXISTS f_valorHipotenusa;

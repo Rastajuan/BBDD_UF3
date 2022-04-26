@@ -11,6 +11,9 @@ BEGIN
 	INSERT INTO venta
 	VALUES
 	(codg_libro, codg_socio, fecha_venta, cantidad_venta, @precio);
+    /*Actualizamos el stock después de la venta*/
+	UPDATE libro
+	SET stock:=(stock-cantidad_venta) WHERE libro.codigo=codg_libro;
 END
 //
 DELIMITER ;
@@ -30,17 +33,9 @@ DROP TRIGGER IF EXISTS trg_comprobar_Stock;
 CREATE TRIGGER trg_comprobar_Stock BEFORE INSERT ON venta 
 FOR EACH ROW
 BEGIN
-	DECLARE nuevo_Stock INT;
-	SET @nuevo_Stock:=(SELECT libro.stock FROM libro WHERE libro.codigo=NEW.cod_libro)-NEW.cantidad;
-
 	IF NEW.cantidad>(SELECT libro.stock FROM libro WHERE libro.codigo=NEW.cod_libro) 
 	THEN 
 		signal sqlstate '12345' SET message_text = 'No queda stock para comprar, sentimos las molestias.';
-	END IF;
-	IF NEW.cantidad<=(SELECT libro.stock FROM libro WHERE libro.codigo=NEW.cod_libro) 
-	THEN 
-		UPDATE libro
-		SET stock:=nuevo_Stock WHERE libro.codigo=NEW.cod_libro;
 	END IF;
 END
 //
@@ -48,7 +43,7 @@ DELIMITER ;
 
 /*LLAMADA TRIGGER*/
 CALL insert_Ventas(2, 5656, '2022-04-03', 5);
-CALL insert_Ventas(2, 5656, '2022-04-03', 30);
+CALL insert_Ventas(1, 5656, '2022-04-03', 3);
 
 (====================================================================================================================================================================================================================================================================================================================================)
 
